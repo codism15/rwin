@@ -1,0 +1,68 @@
+; setup global variables
+
+RWIN_HOME := SubStr(A_ScriptDir, 1, InStr(A_ScriptDir, "\", false, 0)-1)
+EnvSet, RWIN_HOME, %RWIN_HOME%
+
+min(a, b) {
+	return a < b ? a : b
+}
+
+max(a, b) {
+	return a > b ? a : b
+}
+
+; pick up the next value that is close to the start value
+; current should be initialized to end
+GetNextValue(start, end, value, byref current, byref delta) {
+	;MsgBox GetNextValue go up start=%start% end=%end% v=%value% current=%current%
+	if (start < end) {
+		if (value <= start or value > end)
+			return 0
+			
+		if (current > value) {
+			current := value
+			delta := current - start
+		}
+	} else {
+		if (value >= start or value < end)
+			return 0
+
+		if (current < value) {
+			current := value
+			delta := current - start
+		}
+	}
+	return 1
+}
+
+save_mouse_current_pos() {
+	global
+	coordmode, mouse, screen
+	MouseGetPos, old_mouse_x, old_mouse_y
+}
+
+restore_mouse_pos() {
+	global
+	coordmode, mouse, screen
+	MouseMove, %old_mouse_x%, %old_mouse_y%	
+}
+
+click_tray_icon(iconfile, button, clickcount) {
+	coordmode, mouse, screen
+	coordmode, pixel, screen
+
+	WinGetPos, trayX, trayY, trayWidth, trayHeight, ahk_class Shell_TrayWnd
+	ImageSearch, imageX, imageY, trayX, trayY, trayX+trayWidth, trayY+trayHeight, *15 %A_ScriptDir%\%iconfile%
+	if errorlevel {
+		return
+	}
+	MouseClick, %button%, imageX+8, imageY+8, %clickcount%, 4
+}
+
+click_image(imagefile) {
+	WinGetPos, , , width, height, A
+	ImageSearch, x, y, 0, 20, width, height, %imagefile%
+	if ! errorlevel {
+		mouseclick, left, x, y, , 6
+	}
+}

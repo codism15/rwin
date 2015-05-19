@@ -1,0 +1,4 @@
+syntax: glob
+
+Thumbs.db
+SyncToy_*

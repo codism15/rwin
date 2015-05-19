@@ -1,0 +1,11 @@
+save_mouse_current_pos() {
+	global
+	coordmode, mouse, screen
+	MouseGetPos, old_mouse_x, old_mouse_y
+}
+
+restore_mouse_pos() {
+	global
+	coordmode, mouse, screen
+	MouseMove, %old_mouse_x%, %old_mouse_y%	
+}

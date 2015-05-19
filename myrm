@@ -1,0 +1,160 @@
+#!/bin/bash
+
+# I write this bash shell for my careless wife who usually say Opp's after
+# removing files;-)
+#
+# See documentation after the codes of this file for more info about version
+# log installing and etc.
+#
+#
+# -- setting up, modify if needed ----
+#
+# Definitions, enviromental variable TRASHCAN can override default value
+DEFAULT_TRASHCAN_PATH=~/.trashcan.myrm
+#
+# Files to be removed go to one of the 'to be removed' directories, I call them
+# "buffer". Image there is a queue before really removing.
+# Define BUFFER_SIZE to control the queue's size, which offers times to rollback
+# (un-delete).
+#
+BUFFER_SIZE=8
+#
+# system's default rm is suppose to be /bin
+SYSTEM_RM=/bin/rm
+#
+# -- end settings --------------------
+
+# use default trashcan direcotry if needed.
+if [ -z "$TRASHCAN" ]; then
+    TRASHCAN="$DEFAULT_TRASHCAN_PATH"
+fi
+
+# test if the name for trashcan is occupated by other file
+if [ -f "$TRASHCAN" ]; then
+    echo "Error: There is a file named with $TRASHCAN"
+    exit
+fi
+
+# create trash can directory if needed
+if [ ! -d "$TRASHCAN" ]; then
+    mkdir "$TRASHCAN"
+fi
+
+# trash can disk space usage
+if [ "$1" = "--diskusage" -o "$1" = "-d" ]; then
+    du -h -s "$TRASHCAN"
+    exit
+fi
+
+# purge trash can
+if [ "$1" = "--purge" ]; then
+    $SYSTEM_RM -rf "$TRASHCAN"/*
+    exit
+fi
+
+# load pointer
+POINTER=0
+if [ -f "$TRASHCAN"/pointer ]; then
+    POINTER=`cat "$TRASHCAN"/pointer`
+fi
+
+# undo
+if [ "$1" = "--undo" -o "$1" = "-u" ]; then
+    mv "$TRASHCAN"/$POINTER/* .
+    POINTER=$[$POINTER-1]
+    if [ $POINTER -le 0 ]; then
+	POINTER=$[$BUFFER_SIZE-1]
+    fi
+    echo $POINTER > "$TRASHCAN"/pointer
+    exit
+fi
+
+# show pointer only
+if [ "$1" = "--showpointer" -o "$1" == "-s" ]; then
+    echo $POINTER
+    exit
+fi
+
+POINTER=$[$POINTER+1];
+
+if [ $POINTER -ge $BUFFER_SIZE ]; then
+    POINTER=0
+fi
+
+echo $POINTER > "$TRASHCAN"/pointer
+
+TARGETDIR="$TRASHCAN"/$POINTER
+
+if [ -d "$TARGETDIR" ]; then
+    $SYSTEM_RM -rf "$TARGETDIR"/*                 # empty buffer first
+else
+    mkdir "$TARGETDIR"                            # make current dir
+fi
+
+# by calling myrm without parameters, purge the oldest removed files
+if [ -z "$1" ]; then
+    du -h -s "$TRASHCAN"
+    exit
+fi
+
+# ignore the rm options such as -rf
+
+while [ -n "$1" ]
+do
+  if [ "${1:0:1}" != "-" ]; then
+      mv -f "$1" "$TARGETDIR"                     # move file to current buffer
+  fi
+  shift
+done
+
+exit
+
+# code end here, documentation follows
+
+# -- Documents ---------------------
+#
+# Intruducing
+#
+# Program gives a brief protection by moving file to be removed to a pre-defined
+# trash can directory and executing real removing laterly.
+#
+# Install
+#
+#   Simply alias rm to this script to make it working for you.
+#   Don't forget to make your modifying takes effect by re-login.
+#
+# Update logs:
+#   Aug-23-2005: bug fixed for cygwin
+#       The solution is to cooperate with the $HOME directory containing spaces
+#   Sep-13-2003: long file name supported.
+#       Refer to:
+#       http://www.linuxforums.org/forum/topic-24094.html
+#
+#   Sep-30-2003: support more options
+#     --diskusage, -d   display disk usage by trash can
+#     --undo, -u   recover the lastest removed files into current dir.
+#     --showpointer, -s   show pointer for recover manully.
+#
+#   Sep-24-2003: can filter off system rm's option such as -rf.
+#     support --diskusage and --purge options
+#
+#   Sep-23-2003: First version released
+#
+# Help:
+#   How many disk space trash can is using?
+#   rm --diskusage
+#
+#   Purge trash can
+#   rm --purge
+#
+#   How to restory removed files?
+#   1. goto your trash can directory, default is ~/.trashcan.myrm
+#   2. check the sub-directories to see where are wanted files
+#      (file "pointer" will tell you which is the most recent
+#       recover directory)
+#   3. simply move them back into your work directory.
+#   (another simpler way is using --undo option to recover the lastest removed
+#    files directly.)
+#
+# Author: Rui Luo, lplusplus@gmail
+# Last Date: Sep-13, 2004

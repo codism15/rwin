@@ -1,0 +1,31 @@
+min(a, b) {
+	return a < b ? a : b
+}
+
+max(a, b) {
+	return a > b ? a : b
+}
+
+; pick up the next value that is close to the start value
+; current should be initialized to end
+GetNextValue(start, end, value, byref current, byref delta) {
+	;MsgBox GetNextValue go up start=%start% end=%end% v=%value% current=%current%
+	if (start < end) {
+		if (value <= start or value > end)
+			return 0
+			
+		if (current > value) {
+			current := value
+			delta := current - start
+		}
+	} else {
+		if (value >= start or value < end)
+			return 0
+
+		if (current < value) {
+			current := value
+			delta := current - start
+		}
+	}
+	return 1
+}
