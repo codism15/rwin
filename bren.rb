@@ -36,10 +36,10 @@ Ordering:
         r, random:  order by random numbers
     A regular expression pattern with a capture can also be used. The following
     are some examples:
-        (\d+)\.txt/t  order by the number before the extension name, in alphabet
+        (\\d+)\\.txt/t  order by the number before the extension name, in alphabet
                       order. The data type indicator '/t' can be ommited as it is
                       the default.
-        (\d+)/n       order by the first number found, in numeric order.
+        (\\d+)/n       order by the first number found, in numeric order.
     Additionally, a minus sign can follow a sort key to reverse the order.
 
 Transformer:

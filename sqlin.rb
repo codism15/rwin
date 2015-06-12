@@ -1,5 +1,10 @@
 require 'clipboard'
 require 'optparse'
+require 'logger'
+
+Encoding.default_internal = Encoding::UTF_8
+
+$log = Logger.new(STDERR)
 
 options = OptionParser.new do |opts|
     opts.banner = 'Usage: sqlin.rb [options]'
@@ -29,6 +34,14 @@ EOF
         $output_width = n.to_i
     end
 
+	opts.on('-l', '--logger [LEVEL]', 'trun on logger') do |level|
+        level ||= 'info'
+		$log.level =
+			if level.casecmp('info') == 0 then Logger::INFO
+			elsif level.casecmp('debug') == 0 then Logger::DEBUG
+			else abort "unknown log level #{level}"
+			end
+    end
 end
 
 options.parse!
@@ -53,10 +66,30 @@ if defined? $input_filename
 	end
 else
 	# load from clipboard
-	Clipboard.paste.split(/\r?\n/).each {|line|load_source_line(line)}
+	str = Clipboard.paste
+	$log.debug "clipboard text encoding: #{str.encoding}"
+	str = str.encode('utf-8', :invalid => :replace, :undef => :replace, :replace => '')
+	ending = str.index("\0")
+	if ending != nil && ending >= 0
+		str = str.slice(0, ending)
+	end
+	
+	if $log.debug?
+		$log.debug "clipboard text length: #{str.length}"
+		str.bytes.each_slice(8) {|row|
+			$log.debug row.map{|b|sprintf(" 0x%02X",b)}.join
+		}
+	end
+	str.split(/\r?\n/).each {|line|load_source_line(line)}
 end
 
 abort 'no data is found' if $lines.length == 0
+
+if $log.debug?
+	$lines.each {|line|
+		$log.debug("#{line.length}, #{line}")
+	}
+end
 
 # detect data type
 
