@@ -59,6 +59,11 @@ SetKeyDelay, 1, 1,
 	RunWait, ruby "%RWIN_HOME%\fixwidth.rb"  -c-- -o clip, , Hide
 	Send, {CTRLDOWN}{v}{CTRLUP}
 	return
+
+^!f::
+	RunWait, ruby "%RWIN_HOME%\sqlstrfmt.rb", , Hide
+	Send, {CTRLDOWN}{v}{CTRLUP}
+	return
 	
 ^-::	Send, (nolock)
 
