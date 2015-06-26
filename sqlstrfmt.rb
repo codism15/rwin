@@ -22,38 +22,27 @@ s = StringScanner.new(str)
 while !s.eos? do
 	arr << s.scan(/[^']+/)
 	arr << s.scan(/'/)
-	# scan string
+	# entering a string
 	while !s.eos? do
-		arr << s.scan(/[^'@]+/)
-		
-		c = s.scan(/['@]/)
-		nextc = s.scan(/['@]/)
-		
-		if c == "'"
+		last_match = s.scan_until(/'|@@?[_a-z][_a-z0-9]*|[_a-z][_a-z0-9]*\([^\)]*\)/i)
+		matched = s.matched
+		arr << last_match.slice(0..-matched.length-1)
+		if matched == "'"
 			arr << "'"
-			if nextc == "'"
-				# an escaped single quote
-				;
+			if s.peek(1) == "'"
+				# double quote
+				s.getch
 			else
-				# end of string
-				arr << nextc
+				# the quote was closing the string
 				break
 			end
-		elsif c == '@'
-			if nextc == '@'
-				arr << '@'	# an escaped @
-			else
-				id = s.scan(/[_a-z][_a-z0-9]*(\(\))?/i)
-				if id !~ /\(/
-					arr << "' + cast(@#{id} as nvarchar) + '"
-				else
-					arr << "' + cast(#{id} as nvarchar) + '"
-				end
-			end
 		else
-			abort "unhandled #{c}"
+			arr << "' + cast(#{matched} as nvarchar) + '"
 		end
 	end
 end
 
-Clipboard.copy arr.join
+output = arr.join
+output.gsub!(" + ''", '')
+
+Clipboard.copy output
