@@ -5,4 +5,5 @@ BINARIES = $(filter-out %.vshost.exe, $(wildcard *.exe *.dll))
 EXE = $(firstword $(BINARIES))
 
 ../$(EXE):	$(BINARIES)
-	ilmerge.exe "/targetplatform:v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /out:$@ $^
+	ilmerge.exe "/targetplatform:v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /out:$@ $^ /allowDup
+	
