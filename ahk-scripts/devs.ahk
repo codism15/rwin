@@ -1,5 +1,5 @@
 SetTitleMatchMode, 2
-SetKeyDelay, 1, 1,
+SetKeyDelay, 30, 1,
 
 #IfWinActive, - Microsoft Visual Studio
 ^!f::
@@ -67,6 +67,20 @@ SetKeyDelay, 1, 1,
 	
 ^-::	Send, (nolock)
 
+^f1::	Send, sp_help {CTRLDOWN}{v}{CTRLUP}{SHIFT DOWN}{HOME}{SHIFT UP}{F5}
+
+^f2::
+	Send, sp_helptext {CTRLDOWN}{v}{CTRLUP}{SHIFT DOWN}{HOME}{SHIFT UP}{F5}
+	loop 10 {
+		WinWait, A, Executing, 0.5
+		if errorlevel {
+			Sleep, 100
+			Send, {F6}{CTRLDOWN}a{CTRLUP}
+			break
+		}
+	}
+	return
+	
 ; clear SSMS filter
 ^r::
 	Send, {Appskey}

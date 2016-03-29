@@ -1,7 +1,7 @@
 	@echo off
 	setlocal
 	
-	set CLIPEXE=%~dp0clip.exe
+	set CLIPEXE=%~dp0rclip.exe
 	
 	for /f "usebackq" %%i in (`"%CLIPEXE%" ^| grep -E "^\s*(///|//|--)" -o`) do (
 		set PREFIX=%%i
