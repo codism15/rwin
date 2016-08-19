@@ -41,7 +41,7 @@ GetWorkingFolder() {
 	}
 	if StrLen(pathstr) > 3
 	{
-		Run, "%RWIN_HOME%\scd_.exe" -a "%pathstr%", , Hide
+		Run, "%RWIN_HOME%\cdhist.exe" -a "%pathstr%", , Hide
 	}
 	return
 
