@@ -9,19 +9,22 @@ GetWorkingFolder() {
 		; windows 8
 		ControlGetText, pathstr, ToolbarWindow323
 		if StrLen(pathstr) = 0 {
+			; windows 7
 			ControlGetText, pathstr, ToolbarWindow322
 			if StrLen(pathstr) = 0 {
 				ControlGetText, pathstr, Edit1				
 			}
-		} else {
-			if InStr(pathstr, "Address: ") {
-				pathstr := SubStr(pathstr, 10)
-			}
-			
-			; windows 7 control panel
-			if InStr(pathstr, ":") <> 2 {
-				pathstr := "C:\"
-			}
+		}
+
+		if InStr(pathstr, "Address: ") {
+			pathstr := SubStr(pathstr, 10)
+		}
+		; At this point the path string should be something like
+		; C:\tmp. So if the second character is not a colon, just
+		; return C:\ because the path is not a disk path. One
+		; example is windows 7 control panel.
+		if InStr(pathstr, ":") <> 2 {
+			pathstr := "C:\"
 		}
 		return %pathstr%
 	} else {
