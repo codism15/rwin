@@ -49,7 +49,8 @@ if defined? $input_filename
 	end
 else
 	# load from clipboard
-	Clipboard.paste.split(/\r?\n/).each {|line|load_source_line(line)}
+	content = Clipboard.paste.encode('utf-8')
+	content.split(/\r?\n/u).each {|line|load_source_line(line)}
 end
 
 abort 'no data is found' if $lines.length == 0

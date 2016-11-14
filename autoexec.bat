@@ -24,6 +24,6 @@ doskey emacs="%CYGWIN_HOME%\bin\emacs-nox.exe" $*
 set LESS=-Ri
 
 set CYGWIN=nodosfilewarning
-set PROMPT=$P$_$G
+set PROMPT=$_$P$_$G
 
 set MSBUILD_V4=C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe
