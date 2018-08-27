@@ -1,4 +1,4 @@
-:: set current date time in enviroment variable in a compact string
+:: set current date time in environment variable in a compact string
 	@echo off
 	
 	for /f "tokens=1-3 delims=/ " %%A in ("%DATE%") DO (

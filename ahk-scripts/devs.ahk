@@ -4,7 +4,7 @@ SetKeyDelay, 30, 1,
 #IfWinActive, - Microsoft Visual Studio
 ^!f::
 	Send, {CTRLDOWN}c{CTRLUP}
-	RunWait, %RWIN_HOME%\fmtcmt.bat, , Hide UseErrorLevel
+	RunWait, %RWIN_HOME%\reflow-comment.rb -o clip, , Hide UseErrorLevel
 	if !ErrorLevel
 		Send, {CTRLDOWN}v{CTRLUP}
 	return
@@ -32,7 +32,7 @@ SetKeyDelay, 30, 1,
 ;		MouseClick, ,x-50, y+10, , 2
 ;	}
 ;	return
-	
+
 ;^!RIGHT::
 ;	WinGetPos, , , width, height, A
 ;	ImageSearch, x, y, 150, 70, width-150, 100, *30 images\vs2008-active-tab-right.png
@@ -43,17 +43,26 @@ SetKeyDelay, 30, 1,
 ;	}
 ;	return
 
+; pgAdmin 3 double quote the data being copied. This function is to remove the double
+; quotation marks before paste
+; for some reason, this .sql is not matching the pgAdmin 3 query editor
+#IfWinActive, .sql
+^'::
+	RunWait, ruby "%RWIN_HOME%\remove-quote.rb" -o clip, , Hide
+	Send, {CTRLDOWN}{v}{CTRLUP}
+	return
+
 #IfWinActive, SQL Server Management Studio
 ; format sql in text
 ^+V::
 	RunWait, ruby "%RWIN_HOME%\sqlin.rb" -w 120 -o clip, , Hide
 	Send, {CTRLDOWN}{v}{CTRLUP}
-	return	
+	return
 
 ^+B::
 	RunWait, ruby "%RWIN_HOME%\sqlin.rb" -o clip -q, , Hide
 	Send, {CTRLDOWN}{v}{CTRLUP}
-	return	
+	return
 
 ^+P::
 	RunWait, ruby "%RWIN_HOME%\fixwidth.rb"  -c-- -o clip, , Hide
@@ -64,7 +73,7 @@ SetKeyDelay, 30, 1,
 	RunWait, ruby "%RWIN_HOME%\sqlstrfmt.rb", , Hide
 	Send, {CTRLDOWN}{v}{CTRLUP}
 	return
-	
+
 ^-::	Send, (nolock)
 
 ^f1::	Send, sp_help {CTRLDOWN}{v}{CTRLUP}{SHIFT DOWN}{HOME}{SHIFT UP}{F5}
@@ -80,7 +89,7 @@ SetKeyDelay, 30, 1,
 		}
 	}
 	return
-	
+
 ; clear SSMS filter
 ^r::
 	Send, {Appskey}
@@ -94,9 +103,9 @@ SetKeyDelay, 30, 1,
 	Send, {Appskey}
 	Sleep, 300
 	Send, ts
-	WinWait, Filter Settings, 
-	IfWinNotActive, Filter Settings, , WinActivate, Filter Settings, 
-	WinWaitActive, Filter Settings, 
+	WinWait, Filter Settings,
+	IfWinNotActive, Filter Settings, , WinActivate, Filter Settings,
+	WinWaitActive, Filter Settings,
 	Send, {TAB}{TAB}
 	return
 

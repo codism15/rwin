@@ -1,3 +1,6 @@
+# This script formats a block of records in text and fill in spaces to make them
+# take a fixed width. It's intended to be used in SSMS to copy and paste query
+# results into the editor window so the results looks nice and easy to follow.
 require 'clipboard'
 require 'optparse'
 
