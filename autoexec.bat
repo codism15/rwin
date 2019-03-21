@@ -13,7 +13,6 @@ doskey ahki=%~dp0\ahk-scriptwriter\ahkimagetool.exe $*
 doskey ahk=start /wait %UTILS_HOME%\autohotkey\autohotkey.exe $*
 doskey alias=doskey /macros
 doskey cropborder=java -jar %UTILS_HOME%\cropborder\cropborder.jar
-doskey paths=path ^| sed -e 's/PATH=//' -e 's/;/\n/g'
 doskey find=C:\cygwin64\bin\find.exe $*
 
 if exist "C:\Program Files\7-Zip" (
