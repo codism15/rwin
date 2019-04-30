@@ -7,6 +7,7 @@
 require 'pathname'
 require 'date'
 require 'optparse'
+require 'fileutils'
 
 src_dir, repository_dir = ARGV
 
@@ -88,7 +89,7 @@ BEGIN {
             .select {|n|File.directory?(n) && get_time_from_filename(n) < d}
 
         arr.each {|n|
-            puts "Should remove old backups: #{n}"
+            FileUtils.remove_dir(n)
         }
     end
 
