@@ -19,9 +19,6 @@ SetKeyDelay, 30, 1,
 	}
 	return
 
-; duplicate the current line by copy and paste
-^d::	Send, {CTRLDOWN}cv{CTRLUP}
-
 ; disabled because conflict with VirtuaWin hotkeys
 ;^!LEFT::
 ;	WinGetPos, , , width, height, A
@@ -52,7 +49,6 @@ SetKeyDelay, 30, 1,
 	Send, {CTRLDOWN}{v}{CTRLUP}
 	return
 
-#IfWinActive, SQL Server Management Studio
 ; format sql in text
 ^+V::
 	RunWait, ruby "%RWIN_HOME%\sqlin.rb" -w 120 -o clip, , Hide
@@ -89,7 +85,8 @@ SetKeyDelay, 30, 1,
 		}
 	}
 	return
-
+	
+#IfWinActive, SQL Server Management Studio
 ; clear SSMS filter
 ^r::
 	Send, {Appskey}
