@@ -1,3 +1,9 @@
+# It seems this script is no longer needed on Windows 10 because Win 10 comes
+# with ssh-agent service. Just make sure ssh-agent service starts manually
+# and run ssh-agent once at boot time. The following is the PS script to check
+# and set ssh-agent service in Windows 10:
+#
+#   get-service -name ssh-agent | set-service -StartupType Manual
 
 # need pgrep, cygwin package: procps
 
