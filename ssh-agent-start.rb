@@ -4,10 +4,12 @@
 # cygwin's ssh tools, the cygwin path needs to be in front of the windows path.
 #
 # If using Windows 10's ssh client, this script is not needed. Just make sure
-# ssh-agent service starts manually and run ssh-agent once at boot time. The
-# following is the PS script to check and set ssh-agent service in Windows 10:
+# ssh-agent service is running. The following is the PS script to check
+# ssh-agent service in Windows 10:
 #
-#   get-service -name ssh-agent | set-service -StartupType Manual
+#   get-service -name ssh-agent
+#
+# Note: in Services list, Windows' ssh-agent is named as "OpenSSH Authenti..."
 
 # need pgrep, cygwin package: procps
 
