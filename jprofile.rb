@@ -53,7 +53,14 @@ class ObjectParser
             if consolidated_hash.key?(key)
                 existed_value = consolidated_hash[key]
                 if existed_value.class != consolidated_value.class
-                    abort "nonhomogeneous property '#{key}'"
+                    if existed_value.is_a?(NilClass) ||
+                        (existed_value.is_a?(Integer) && consolidated_value.is_a?(Float))
+                        consolidated_hash[key] = consolidated_value
+                    elsif existed_value.is_a?(Float) && consolidated_value.is_a?(Integer)
+                        # do nothing
+                    else
+                        abort "nonhomogeneous property '#{key}': #{existed_value.class} vs. #{consolidated_value.class}"
+                    end
                 end
             else
                 consolidated_hash[key] = consolidated_value
@@ -72,7 +79,6 @@ if obj.is_a? Hash
     hash = parser.consolidate_hash({}, obj)
     puts JSON.pretty_generate(hash)
 elsif obj.is_a? Array
-    arr = []
-    obj.each {|item|parser.consolidated_array(arr, item)}
+    arr = parser.consolidate_array([], item)
     puts JSON.pretty_generate(arr)
 end
