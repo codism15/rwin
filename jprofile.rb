@@ -3,41 +3,45 @@ require 'json'
 class ObjectParser
 
     def initialize()
+        @type_rules = [
+            [Float, Integer, NilClass],
+            [String, NilClass],
+        ]
     end
 
-    def consolidate_item(consolidated_array, item)
-        # consolidated_array contains all possible data types the items of an
-        # array can have except for hash - there will be only one consolidated
-        # hash type, assuming all hash items are homogeneous.
-        idx = consolidated_array.find_index{|i|i.class == item.class}
-        if idx.nil?
-            if item.is_a? Hash
-                consolidated_array << consolidate_hash({}, item)
-            elsif item.is_a? NilClass
-                # Null in an array is probably by mistake, if not by bad design.
-                # We will just ignore them. If we do want to see them as a
-                # alternative data type, enable the following statement to add
-                # Null into the type array.
-                # consolidated_array << item
-            else
-                abort "not handled type for first item: #{item.class.name}"
-            end
-        else
-            # if already existed...
-            if item.is_a? Hash
-                consolidate_hash(consolidated_array[idx], item)
-            elsif %w[String]
-                # sample types, do nothing
-            else
-                abort "not handled type: #{item.class.name}"
-            end
+    def consolidate_item(memo, obj)
+        return obj if memo == nil
+        return memo if obj == nil
+        # Now both memo and obj are not null.
+        if memo.is_a?(Hash) && obj.is_a?(Hash)
+            return consolidate_hash(memo, obj)
+        elsif memo.is_a?(Array) && obj.is_a?(Array)
+            # reduced_array = consolidate_array(obj)
+            # todo: we may want to test if two arraies are homogeneous but
+            # that's too much for now.
+            return memo
         end
-        return consolidated_array
+        return memo if memo.class == obj.class
+        if memo.is_a?(Integer)
+            raise "nonhomogeneous array items: #{memo} vs #{obj}" if !obj.is_a?(Float)
+            return obj  # replace integer with a float
+        elsif memo.is_a?(Float)
+            raise "nonhomogeneous array items: #{memo} vs #{obj}" if !obj.is_a?(Integer)
+            return memo
+        elsif (memo.is_a?(TrueClass) && obj.is_a?(FalseClass)) || (memo.is_a?(FalseClass) && obj.is_a?(TrueClass))
+            return memo
+        else
+            raise "nonhomogeneous array items: #{memo} vs #{obj}"
+        end
     end
 
-    def consolidate_array(consolidated_array, arr)
-        arr.each {|item|consolidate_item(consolidated_array, item)}
-        return consolidated_array
+    def consolidate_array(arr)
+        return arr if arr.length == 0
+        memo = arr[0].is_a?(Array) ? consolidate_array(arr[0]) : arr[0]
+        (1...arr.length).each {|idx|
+            memo = consolidate_item(memo, arr[idx])
+        }
+        return [memo]
     end
 
     def consolidate_hash(consolidated_hash, hash)
@@ -45,23 +49,13 @@ class ObjectParser
             consolidated_value = if value.is_a? Hash
                 consolidate_hash({}, value)
                 elsif value.is_a? Array
-                    consolidate_array([], value)
+                    consolidate_array(value)
                 else
                     # base types like string, number
                     value
                 end
             if consolidated_hash.key?(key)
-                existed_value = consolidated_hash[key]
-                if existed_value.class != consolidated_value.class
-                    if existed_value.is_a?(NilClass) ||
-                        (existed_value.is_a?(Integer) && consolidated_value.is_a?(Float))
-                        consolidated_hash[key] = consolidated_value
-                    elsif existed_value.is_a?(Float) && consolidated_value.is_a?(Integer)
-                        # do nothing
-                    else
-                        abort "nonhomogeneous property '#{key}': #{existed_value.class} vs. #{consolidated_value.class}"
-                    end
-                end
+                consolidated_hash[key] = consolidate_item(consolidated_hash[key], consolidated_value)
             else
                 consolidated_hash[key] = consolidated_value
             end
@@ -70,15 +64,16 @@ class ObjectParser
     end
 end
 
+if __FILE__ == $0
+    obj = JSON.load($<)
 
-obj = JSON.load($<)
+    parser = ObjectParser.new
 
-parser = ObjectParser.new
-
-if obj.is_a? Hash
-    hash = parser.consolidate_hash({}, obj)
-    puts JSON.pretty_generate(hash)
-elsif obj.is_a? Array
-    arr = parser.consolidate_array([], item)
-    puts JSON.pretty_generate(arr)
+    if obj.is_a? Hash
+        hash = parser.consolidate_hash({}, obj)
+        puts JSON.pretty_generate(hash)
+    elsif obj.is_a? Array
+        arr = parser.consolidate_array(item)
+        puts JSON.pretty_generate(arr)
+    end
 end
