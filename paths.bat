@@ -1,3 +1,3 @@
 	@echo off
 	setlocal
-	path | sed -e 's/PATH=//' -e 's/;/\n/g'
+	echo %PATH% | sed -e 's/;/\n/g'
