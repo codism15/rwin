@@ -9,6 +9,7 @@ REM
 REM alias
 doskey l=dir $*
 doskey cd=%~dp0\scd.bat $*
+doskey code="C:\Users\lplus\AppData\Local\Programs\Microsoft VS Code\Code.exe" $*
 doskey npp="C:\Program Files (x86)\Notepad++\notepad++.exe" $*
 doskey alias=doskey /macros
 doskey find=C:\cygwin64\bin\find.exe $*
