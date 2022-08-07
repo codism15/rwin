@@ -9,10 +9,13 @@ REM
 REM alias
 doskey l=dir $*
 doskey cd=%~dp0\scd.bat $*
-doskey code="C:\Users\lplus\AppData\Local\Programs\Microsoft VS Code\Code.exe" $*
 doskey npp="C:\Program Files (x86)\Notepad++\notepad++.exe" $*
-doskey alias=doskey /macros
 doskey find=C:\cygwin64\bin\find.exe $*
+rem doskey vsvar="%VS90COMNTOOLS%vsvars32.bat"
+rem doskey ahkw=start /wait %~dp0\ahk-scriptwriter\ahkwriter.exe --console --windowless $*
+rem doskey ahki=%~dp0\ahk-scriptwriter\ahkimagetool.exe $*
+rem doskey ahk=start /wait %UTILS_HOME%\autohotkey\autohotkey.exe $*
+doskey alias=doskey /macros
 
 rem if exist "C:\Program Files\7-Zip" (
 rem 	doskey 7z="C:\Program Files\7-Zip\7z.exe" $*
