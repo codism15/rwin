@@ -42,28 +42,12 @@ GetWorkingFolder() {
 	{
 		Run, %ComSpec%, %pathstr%
 	}
-	if StrLen(pathstr) > 3
-	{
-		Run, "%RWIN_HOME%\cdhist.exe" -a "%pathstr%", , Hide
-	}
 	return
 
 #^c::
 	Run, %ComSpec%, %temp%
 	return
 	
-; irb
-#!b::
-	pathstr := GetWorkingFolder()
-	Run, "%CYGWIN_HOME%\bin\ruby" /usr/bin/irb, %pathstr%
-	return
-
-; bash
-#b::
-	pathstr := GetWorkingFolder()
-	Run, "%CYGWIN_HOME%\bin\bash" --login, %pathstr%
-	return
-
 ; paste in consle
 +INS::
 	if WinActive("ahk_class ConsoleWindowClass") {
