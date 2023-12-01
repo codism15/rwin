@@ -10,6 +10,8 @@
 
 	if "%~1" == "...." ( pushd "..\..\.." && goto:eof )
 
+	if "%~1" == "....." ( pushd "..\..\..\.." && goto:eof )
+
 :loop
 
 	if exist "%~1" ( pushd "%~1" && goto:next )
