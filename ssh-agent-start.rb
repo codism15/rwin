@@ -10,6 +10,9 @@
 #   get-service -name ssh-agent
 #
 # Note: in Services list, Windows' ssh-agent is named as "OpenSSH Authenti..."
+# Note: Cygwin's rsync does not work with Windows' ssh client.
+# This script is not necessary if using cygwin ssh as it can automatically start
+# ssh-agent
 
 # need pgrep, cygwin package: procps
 
