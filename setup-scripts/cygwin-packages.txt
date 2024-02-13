@@ -1,0 +1,4 @@
+rsync
+curl
+openssh
+procps
