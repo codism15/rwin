@@ -10,13 +10,12 @@
 # SPIKE code folder.
 #
 # To use this script for the first time on a computer:
-#   1. In SPIKE code folder, usually in `...\Documents\LEGO Education SPIKE`,
-#      create a backup-conf.yml. The config file should have a key `backup_repo`
-#      that points to a folder for the local backup.
-#   2. Create the local backup folder.
+#   1. Create a local backup directory. This directory should not be shared among
+#      multiple computers.
 #   3. Optional but strongly suggested, initialize the backup folder with git.
-#   4. Setup a shortcut to run this script with the working directory set to the
-#      SPIKE code folder.
+#   4. Setup a shortcut or batch to run this script with the working directory
+#      set to the SPIKE code folder and the local backup directory as the
+#      command parameter.
 #
 # After setting up the backup, run the shortcut everytime while working with
 # SPIKE software. The script will do the following periodically:
@@ -31,22 +30,16 @@
 
 require 'fileutils'
 require 'json'
-require 'yaml'
 
 #$spike_dir = '.'
 def log(message)
     puts "#{Time.now.strftime('%H:%M')}: #{message}"
 end
 
-config_file = 'backup-conf.yml'
-raise RuntimeError.new("cannot find config file in the current folder.") if !File.exist?(config_file)
-
-config = YAML.load_file(config_file)
-
 # this is is local repo for backup
-$backup_repo = config['backup_repo']
+$backup_repo = $*.delete_at($*.index{|x|Dir.exist?(x)} || 9999)
 
-raise RuntimeError.new("backup repo(#{$backup_repo}) does not exist") if !Dir.exist?($backup_repo)
+raise RuntimeError.new("local backup directory needs to be passed as command line parameter") if !$backup_repo
 
 def scan()
     change_count = 0
@@ -54,6 +47,7 @@ def scan()
     Dir.glob("*.llsp3") {|filename|
         basename = File.basename(filename, ".*")
         dest_dir = "#{$backup_repo}/#{basename}"
+        FileUtils.mkdir_p(dest_dir)
         icon_filename = "#{dest_dir}/icon.svg"
         if (Time.now - File.mtime(filename)) > 60 && (!File.exist?(icon_filename) || File.mtime(filename) > File.mtime(icon_filename))
             log "unzipping #{filename}"
