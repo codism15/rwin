@@ -2,3 +2,4 @@ rsync
 curl
 openssh
 procps
+jq
