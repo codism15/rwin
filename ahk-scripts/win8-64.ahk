@@ -17,21 +17,6 @@ MButton::	MouseClick, left, , ,2
 
 #Esc::	Run, %UTILS_HOME%\procexp.exe
 
-^PgDn::
-	loop 4 {
-		Send, {PgDn}
-		Sleep, 300
-	}
-	Send, {PgDn}
-	return
-^PgUp::
-	loop 4 {
-		Send, {PgUp}
-		Sleep, 300
-	}
-	Send, {PgUp}
-	return
-	
 ; start firefox
 #w::
 	Run, "%ProgramFiles%\Mozilla Firefox\firefox.exe"
