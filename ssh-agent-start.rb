@@ -24,7 +24,10 @@ if agent_pid.length > 0
     exit
 end
 
-scripts = `ssh-agent`
+# Cygwin's rsync only works with Cygwin's ssh client. Make sure cygwin path is
+# in front of git's \usr\bin so Cygwin's ssh.exe can be used. For windows 10+,
+# uninstall openssh client.
+scripts = `C:/cygwin64/bin/ssh-agent.exe`
 
 scripts.each_line {|line|
     line.chomp!
