@@ -1,5 +1,0 @@
-/		activate/deactivate keyword searcher
-ESC		clear keyword buffer
-BK		earse the last key entered
-UP		Search previors match
-DOWN	Search next match
